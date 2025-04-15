@@ -3,6 +3,9 @@
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/study/data" />
+      <excludeFolder url="file://$MODULE_DIR$/study/torch线性回归/data" />
+      <excludeFolder url="file://$MODULE_DIR$/study/torch神经网络/data" />
+      <excludeFolder url="file://$MODULE_DIR$/大作业1/data" />
     </content>
     <orderEntry type="jdk" jdkName="AI" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />

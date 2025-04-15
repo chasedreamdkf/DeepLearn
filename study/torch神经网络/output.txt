@@ -1,0 +1,6 @@
+Epoch [1/1], Iter [10/60] Loss: 0.8532 
+Epoch [1/1], Iter [20/60] Loss: 0.4986 
+Epoch [1/1], Iter [30/60] Loss: 0.4423 
+Epoch [1/1], Iter [40/60] Loss: 0.2334 
+Epoch [1/1], Iter [50/60] Loss: 0.1850 
+Epoch [1/1], Iter [60/60] Loss: 0.2303 
