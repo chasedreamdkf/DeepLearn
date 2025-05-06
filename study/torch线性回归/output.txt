@@ -1,0 +1,6 @@
+Epoch [10/60], Loss: 6.0844 
+Epoch [20/60], Loss: 1.1429 
+Epoch [30/60], Loss: 0.3318 
+Epoch [40/60], Loss: 0.1987 
+Epoch [50/60], Loss: 0.1769 
+Epoch [60/60], Loss: 0.1733 

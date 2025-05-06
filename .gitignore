@@ -1,0 +1,12 @@
+# 默认忽略的文件
+.idea/
+/shelf/
+/workspace.xml
+test*.*
+
+data/
+!Experiment/ResNet/data
+!Experiment/U-Net/data
+*.pth
+
+__pycache__/
