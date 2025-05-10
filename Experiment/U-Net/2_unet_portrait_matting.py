@@ -17,14 +17,15 @@ from torch.utils.data import DataLoader
 from matplotlib import pyplot as plt
 import torch.optim as optim
 import torchvision.models as models
-from tools.common_tools import set_seed
+# from tools.common_tools import set_seed
 from tools.my_dataset import PortraitDataset
 from tools.unet import UNet
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print(device)
 
-set_seed()  # 设置随机种子
+# set_seed()  # 设置随机种子
 
 
 def compute_dice(y_pred, y_true):
@@ -51,8 +52,10 @@ if __name__ == "__main__":
     vis_num = 10
     mask_thres = 0.5
 
-    train_dir = os.path.join(BASE_DIR, "..", "..", "data", "PortraitDataset", "train")
-    valid_dir = os.path.join(BASE_DIR, "..", "..", "data", "PortraitDataset", "valid")
+    # train_dir = os.path.join(BASE_DIR, "..", "..", "data", "PortraitDataset", "train")
+    train_dir = './data/PortraitDataset/train'
+    # valid_dir = os.path.join(BASE_DIR, "..", "..", "data", "PortraitDataset", "valid")
+    valid_dir = './data/PortraitDataset/valid'
 
     # step 1
     train_set = PortraitDataset(train_dir)
@@ -106,7 +109,7 @@ if __name__ == "__main__":
 
             print("Training:Epoch[{:0>3}/{:0>3}] Iteration[{:0>3}/{:0>3}] running_loss: {:.4f}, mean_loss: {:.4f} "
                   "running_dice: {:.4f} lr:{}".format(epoch, max_epoch, iter + 1, len(train_loader), loss.item(),
-                                    train_loss_total/(iter+1), train_dice, scheduler.get_lr()))
+                                    train_loss_total/(iter+1), train_dice, scheduler.get_last_lr()))
 
         scheduler.step()
 
