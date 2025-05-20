@@ -113,7 +113,7 @@ class SharedBikeDataSet(Dataset):
 
 if __name__ == "__main__":
     # 数据集路径
-    dataset_path = 'd:/Code/DeepLearn/大作业1/data/hour.csv'
-    
-    # 分割并保存数据集
-    SharedBikeDataSet.split_and_save_dataset(dataset_path)
+    dataset_path = '../data/hour.csv'
+    data = SharedBikeDataSet(dataset_path)
+    print(data.features)
+    print(data.labels)

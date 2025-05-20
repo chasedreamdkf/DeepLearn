@@ -1,14 +1,10 @@
 import os
 import torch
 import torch.nn as nn
-from torch.utils.data import DataLoader
 import matplotlib.pyplot as plt
-from torch.serialization import add_safe_globals
-from torch.utils.data.dataset import Subset
+from torch.utils.data import DataLoader, Dataset, random_split
 from DataSet.SharedBikeDataSet import SharedBikeDataSet  # 添加这行导入语句
 
-# 添加Subset到安全全局变量列表
-add_safe_globals([Subset])
 
 # 定义神经网络模型
 class BikeSharingMLP(nn.Module):
@@ -18,11 +14,15 @@ class BikeSharingMLP(nn.Module):
             nn.Linear(input_size, 128),
             nn.ReLU(),
             nn.Dropout(0.2),
+            # 批标准化
+            nn.BatchNorm1d(128),
             nn.Linear(128, 64),
             nn.ReLU(),
             nn.Dropout(0.2),
+            # nn.BatchNorm1d(64),
             nn.Linear(64, 32),
             nn.ReLU(),
+            nn.BatchNorm1d(32),
             nn.Linear(32, 1)
         )
     
@@ -33,7 +33,7 @@ def train_model(model, train_loader, test_loader, criterion, optimizer, device, 
     train_losses = []
     test_losses = []
     
-    # 将模型移动到指定设备
+    # 将模型移动到指定设备，使用GPU训练模型
     model = model.to(device)
     
     for epoch in range(num_epochs):
@@ -60,7 +60,7 @@ def train_model(model, train_loader, test_loader, criterion, optimizer, device, 
         test_loss = 0.0
         with torch.no_grad():
             for features, labels in test_loader:
-                # 将数据移动到指定设备
+                # 使用GPU训练
                 features = features.to(device)
                 labels = labels.to(device)
                 
@@ -87,8 +87,21 @@ def plot_losses(train_losses, test_losses):
     plt.title('Training and Testing Loss Over Time')
     plt.legend()
     plt.grid(True)
-    plt.savefig('loss_plot.png')
     plt.show()
+    plt.savefig('loss_plot.png')
+
+
+def init_weights(m):
+    """
+    初始化模型参数，使用xavier初始化
+    :param m:
+    :return:
+    """
+    if isinstance(m, nn.Linear):
+        # print("初始化权重")
+        nn.init.xavier_uniform_(m.weight)
+        nn.init.constant_(m.bias, 0)
+
 
 def main():
     os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
@@ -96,16 +109,25 @@ def main():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f'使用设备: {device}')
     # 加载数据集时指定weights_only=False
-    data = torch.load('d:/Code/DeepLearn/大作业1/data/processed_data/bike_sharing_dataset.pt', weights_only=False)
-    train_dataset = data['train_dataset']
-    test_dataset = data['test_dataset']
-
+    dataset_path = './data/hour.csv'
+    data = SharedBikeDataSet(dataset_path)
+    # 分割数据集
+    torch.manual_seed(42)
+    total_size = len(data)
+    test_length = int(total_size * 0.2)
+    train_length = total_size - test_length
+    train_dataset, test_dataset = random_split(
+        data,
+        [train_length, test_length],
+        generator=torch.Generator().manual_seed(42)
+    )
+    # print(train_dataset.dataset)
     
     # 创建数据加载器
     train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
     test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
-    print("train_dataset:\n", train_loader)
-    print("test_dataset:\n", test_loader)
+    # print("train_dataset:\n", train_loader)
+    # print("test_dataset:\n", test_loader)
     
     # 获取输入特征的维度
     sample_features, _ = next(iter(train_loader))
@@ -113,14 +135,16 @@ def main():
     
     # 创建模型
     model = BikeSharingMLP(input_size)
-    
+    model.apply(init_weights)
+    # print(model.weight.data)
+
     # 定义损失函数和优化器
     criterion = nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
-    
+
     # 训练模型
     train_losses, test_losses = train_model(
-        model, train_loader, test_loader, criterion, optimizer, device, num_epochs=300
+        model, train_loader, test_loader, criterion, optimizer, device, num_epochs=100
     )
 
     print("train_losses:\n", train_losses)
@@ -132,6 +156,16 @@ def main():
     # 保存模型
     torch.save(model.state_dict(), 'bike_sharing_model.pth')
     print("模型训练完成并已保存！")
+    # 使用测试集前5个作预测，输出真实值和预测值
+    with torch.no_grad():
+        model.eval()
+        for i, (features, labels) in enumerate(test_loader):
+            if i == 5:
+                break
+            features = features.to(device)
+            labels = labels.to(device)
+            outputs = model(features)
+            print(f"真实值: {labels[0].item():.2f}, 预测值: {outputs[0].item():.2f}")
 
 if __name__ == "__main__":
     main()
