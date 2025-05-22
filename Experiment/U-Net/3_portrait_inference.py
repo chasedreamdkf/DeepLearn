@@ -18,14 +18,14 @@ from torch.utils.data import DataLoader
 from matplotlib import pyplot as plt
 import torch.optim as optim
 import torchvision.models as models
-from tools.common_tools import set_seed
+# from tools.common_tools import set_seed
 from tools.my_dataset import PortraitDataset
 from tools.unet import UNet
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-set_seed()  # 设置随机种子
+# set_seed()  # 设置随机种子
 
 
 def compute_dice(y_pred, y_true):
@@ -58,7 +58,7 @@ def get_img_name(img_dir, format="jpg"):
 def get_model(m_path):
 
     unet = UNet(in_channels=3, out_channels=1, init_features=32)
-    checkpoint = torch.load(m_path, map_location="cpu")
+    checkpoint = torch.load(m_path, map_location="cpu", weights_only=False)
 
     # remove module.
     from collections import OrderedDict
@@ -73,8 +73,10 @@ def get_model(m_path):
 
 
 if __name__ == "__main__":
-
-    img_dir = os.path.join(BASE_DIR, "..", "..", "data", "PortraitDataset", "valid")
+    if os.name == "nt":
+        os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
+    # img_dir = os.path.join(BASE_DIR, "..", "..", "data", "PortraitDataset", "valid")
+    img_dir = './data/PortraitDataset/valid'
     model_path = "checkpoint_399_epoch.pkl"
     time_total = 0
     num_infer = 5

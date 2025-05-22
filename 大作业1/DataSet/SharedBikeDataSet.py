@@ -68,48 +68,6 @@ class SharedBikeDataSet(Dataset):
             
         return feature, label
 
-    @staticmethod
-    def split_and_save_dataset(dataset_path: str, test_size: float = 0.2, seed: int = 42):
-        """
-        将数据集分割为训练集和测试集并保存
-        :param dataset_path: 数据集路径
-        :param test_size: 测试集比例
-        :param seed: 随机种子
-        :return: None
-        """
-        # 设置随机种子
-        torch.manual_seed(seed)
-        
-        # 创建数据集实例
-        dataset = SharedBikeDataSet(dataset_path)
-        
-        # 计算训练集和测试集的大小
-        total_size = len(dataset)
-        test_length = int(total_size * test_size)
-        train_length = total_size - test_length
-        
-        # 使用random_split进行数据集分割
-        train_dataset, test_dataset = random_split(
-            dataset, 
-            [train_length, test_length],
-            generator=torch.Generator().manual_seed(seed)
-        )
-        
-        # 创建保存目录
-        save_dir = os.path.join(os.path.dirname(dataset_path), 'processed_data')
-        os.makedirs(save_dir, exist_ok=True)
-        
-        # 保存数据集
-        torch.save({
-            'train_dataset': train_dataset,
-            'test_dataset': test_dataset,
-            'train_size': train_length,
-            'test_size': test_length
-        }, os.path.join(save_dir, 'bike_sharing_dataset.pt'))
-        
-        print(f"训练集大小: {train_length}")
-        print(f"测试集大小: {test_length}")
-        print(f"数据已保存到: {save_dir}")
 
 if __name__ == "__main__":
     # 数据集路径
