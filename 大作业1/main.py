@@ -87,8 +87,9 @@ def plot_losses(train_losses, test_losses):
     plt.title('Training and Testing Loss Over Time')
     plt.legend()
     plt.grid(True)
-    plt.show()
     plt.savefig('loss_plot.png')
+    plt.show()
+
 
 
 def init_weights(m):

@@ -125,8 +125,9 @@ def plot_losses(items: dict):
     plt.title(f'{title} Loss Over Time')
     plt.legend()
     plt.grid(True)
+    plt.savefig('./loss_plot.png')
     plt.show()
-    plt.savefig('./loss_plot.jpg')
+
 
 # 主训练循环
 def main():
@@ -156,7 +157,11 @@ def main():
     date = time.strftime("%Y-%m-%d-%H:%M:%S", time.localtime())
     if not os.path.exists('./temp'):
         os.mkdir('./temp')
-    f = open(f'./temp/{date}.log', 'w')
+    if os.name == "nt":
+        f = open('./temp/train.log', 'w')
+        f.write(f'Training in {date}\n')
+    else:
+        f = open(f'./temp/{date}.log', 'w')
     for epoch in range(num_epochs):
         
         # 训练阶段
