@@ -1,4 +1,5 @@
 import os
+import time
 import torch
 import torch.nn as nn
 from matplotlib import pyplot as plt
@@ -32,8 +33,9 @@ class CatDogClassic(nn.Module):
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2),  # 输出: 512 x 7 x 7
             
-            nn.Flatten(),  # 输出: 512 * 7 * 7 = 25088
-            nn.Linear(512 * 7 * 7, 256),  # 修改这里的输入维度
+            # 全连接层
+            nn.Flatten(),  # 展平，输出: 512 * 7 * 7 = 25088
+            nn.Linear(512 * 7 * 7, 256),
             nn.ReLU(),
             nn.Dropout(0.5),
             nn.Linear(256, 1),
@@ -124,7 +126,7 @@ def plot_losses(items: dict):
     plt.legend()
     plt.grid(True)
     plt.show()
-    plt.save('./loss_plot.png')
+    plt.savefig('./loss_plot.jpg')
 
 # 主训练循环
 def main():
@@ -132,7 +134,7 @@ def main():
     if os.name == "nt":
         os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    dataroot = r'.\CatsDogs'
+    dataroot = r'./CatsDogs'
     train = CatDog(dataroot, status="train")
     val = CatDog(dataroot, status="val")
     # print(train[0])
@@ -151,7 +153,12 @@ def main():
     train_losses = []
     val_losses = []
 
+    date = time.strftime("%Y-%m-%d-%H:%M:%S", time.localtime())
+    if not os.path.exists('./temp'):
+        os.mkdir('./temp')
+    f = open(f'./temp/{date}.log', 'w')
     for epoch in range(num_epochs):
+        
         # 训练阶段
         train_loss, train_acc = train_model(model, train_loader, criterion, optimizer, device)
         train_losses.append(train_loss)
@@ -162,16 +169,26 @@ def main():
         print(f'Epoch [{epoch+1}/{num_epochs}]')
         print(f'Training Loss: {train_loss:.4f}, Training Accuracy: {train_acc:.2f}%')
         print(f'Validation Loss: {val_loss:.4f}, Validation Accuracy: {val_acc:.2f}%')
-        
+        # 将训练信息写入日志文件
+        f.write(f'Epoch [{epoch+1}/{num_epochs}]\n')
+        f.write(f'Training Loss: {train_loss:.4f}, Training Accuracy: {train_acc:.2f}%\n')
+        f.write(f'Validation Loss: {val_loss:.4f}, Validation Accuracy: {val_acc:.2f}%\n')
+
         # 保存最佳模型
         if val_acc > best_val_acc:
             best_val_acc = val_acc
             torch.save(model.state_dict(), 'best_model.pth')
             print(f'Model saved with validation accuracy: {val_acc:.2f}%')
+            f.write(f'Model saved with validation accuracy: {val_acc:.2f}%\n')
         print('-' * 60)
+        f.write('-' * 60)
+        f.write('\n')
     
+    f.write(str(train[0][0]))
+    f.close()
     # 绘制训练损失曲线
     plot_losses({"train": train_losses, "val": val_losses})
+    print(str(train[0][0]))
 
 if __name__ == '__main__':
     main()

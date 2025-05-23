@@ -24,9 +24,10 @@ class CatDog(Dataset):
             self.imgs.extend(imgs)
 
         if transform is None:
-            normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                                             std=[0.229, 0.224, 0.225]
-                                             )
+            normalize = transforms.Normalize(
+                mean=[0.485, 0.456, 0.406],
+                std=[0.229, 0.224, 0.225]
+            )
             if status != "train" or status == "test":
                 self.transforms = transforms.Compose([
                     transforms.Resize(224),
@@ -63,7 +64,7 @@ class CatDog(Dataset):
 
 
 if __name__ == "__main__":
-    dataroot = r'.\CatsDogs'
+    dataroot = './CatsDogs'
     cat_dog = CatDog(dataroot, "val")
-    i, l = cat_dog.__getitem__(100)
+    i, l = cat_dog[500]
     print(i, l)

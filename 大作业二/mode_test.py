@@ -71,7 +71,7 @@ if __name__ == '__main__':
     if os.name == "nt":
         os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
     # 设置中文字体
-    plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来正常显示中文标签
+    plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']  # 用来正常显示中文标签
     plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
     test_model()
 
