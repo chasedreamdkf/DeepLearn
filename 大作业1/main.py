@@ -87,7 +87,7 @@ def plot_losses(train_losses, test_losses):
     plt.title('Training and Testing Loss Over Time')
     plt.legend()
     plt.grid(True)
-    plt.savefig('loss_plot.png')
+    plt.savefig('loss_plot_BCE.png')
     plt.show()
 
 

@@ -7,6 +7,7 @@ test*.*
 data/
 !Experiment/ResNet/data
 !Experiment/U-Net/data
+!大作业1/data
 *.pth
 
 __pycache__/
