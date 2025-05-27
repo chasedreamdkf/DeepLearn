@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # 模型路径
-model_path = './best_model.pth'
+model_path = './best_model_0.001.pth'
 
 # 加载测试数据集
 test_dataset = CatDog(root='./CatsDogs', status='test')

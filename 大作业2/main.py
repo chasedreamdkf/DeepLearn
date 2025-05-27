@@ -16,23 +16,23 @@ class CatDogClassic(nn.Module):
             nn.Conv2d(input_channel, 32, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2),  # 输出: 32 x 112 x 112
-            
+            nn.BatchNorm2d(32),
             nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2),  # 输出: 64 x 56 x 56
-            
+            nn.BatchNorm2d(64),
             nn.Conv2d(64, 128, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2),  # 输出: 128 x 28 x 28
-            
+            nn.BatchNorm2d(128),
             nn.Conv2d(128, 256, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2),  # 输出: 256 x 14 x 14
-            
+            nn.BatchNorm2d(256),
             nn.Conv2d(256, 512, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2),  # 输出: 512 x 7 x 7
-            
+            nn.BatchNorm2d(512),
             # 全连接层
             nn.Flatten(),  # 展平，输出: 512 * 7 * 7 = 25088
             nn.Linear(512 * 7 * 7, 256),
@@ -158,7 +158,7 @@ def main():
     if not os.path.exists('./temp'):
         os.mkdir('./temp')
     if os.name == "nt":
-        f = open('./temp/train.log', 'w')
+        f = open('./temp/train.log', 'a+')
         f.write(f'Training in {date}\n')
     else:
         f = open(f'./temp/{date}.log', 'w')
@@ -188,8 +188,9 @@ def main():
         print('-' * 60)
         f.write('-' * 60)
         f.write('\n')
+        f.flush()
     
-    f.write(str(train[0][0]))
+    f.write(str(train[0][0]) + '\n')
     f.close()
     # 绘制训练损失曲线
     plot_losses({"train": train_losses, "val": val_losses})
