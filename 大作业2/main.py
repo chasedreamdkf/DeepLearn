@@ -125,7 +125,7 @@ def plot_losses(items: dict):
     plt.title(f'{title} Loss Over Time')
     plt.legend()
     plt.grid(True)
-    plt.savefig('./loss_plot.png')
+    plt.savefig('./temp/loss_plot.png')
     plt.show()
 
 
@@ -134,6 +134,8 @@ def main():
     """主函数"""
     if os.name == "nt":
         os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
+    if not os.path.exists('./temp'):
+        os.mkdir('./temp')
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     dataroot = r'./CatsDogs'
     train = CatDog(dataroot, status="train")
@@ -155,8 +157,6 @@ def main():
     val_losses = []
 
     date = time.strftime("%Y-%m-%d-%H:%M:%S", time.localtime())
-    if not os.path.exists('./temp'):
-        os.mkdir('./temp')
     if os.name == "nt":
         f = open('./temp/train.log', 'a+')
         f.write(f'Training in {date}\n')
@@ -182,7 +182,7 @@ def main():
         # 保存最佳模型
         if val_acc > best_val_acc:
             best_val_acc = val_acc
-            torch.save(model.state_dict(), 'best_model.pth')
+            torch.save(model.state_dict(), './temp/best_model.pth')
             print(f'Model saved with validation accuracy: {val_acc:.2f}%')
             f.write(f'Model saved with validation accuracy: {val_acc:.2f}%\n')
         print('-' * 60)
