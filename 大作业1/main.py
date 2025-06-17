@@ -26,19 +26,21 @@ class BikeDataset(Dataset):
 class BikeSharingNN(nn.Module):
     def __init__(self):
         super(BikeSharingNN, self).__init__()
-        self.fc1 = nn.Linear(12, 64)
-        self.fc2 = nn.Linear(64, 32)
-        self.fc3 = nn.Linear(32, 1)
-        self.relu = nn.ReLU()
-        self.dropout = nn.Dropout(0.2)
+        self.layer = nn.Sequential(
+            nn.Linear(12, 64),
+            nn.BatchNorm1d(64),
+            nn.ReLU(),
+            nn.Linear(64, 32),
+            nn.BatchNorm1d(32),
+            nn.Dropout(0.3),
+            nn.ReLU(),
+            nn.Linear(32, 1),
+            nn.ReLU(),
+            nn.Dropout(0.2)
+        )
 
     def forward(self, x):
-        x = self.relu(self.fc1(x))
-        x = self.dropout(x)
-        x = self.relu(self.fc2(x))
-        x = self.dropout(x)
-        x = self.fc3(x)
-        return x
+        return self.layer(x)
 
 
 def main():
@@ -151,7 +153,7 @@ def main():
     plt.close()
 
     # 加载最佳模型进行测试
-    model.load_state_dict(torch.load('best_model.pth'))
+    model.load_state_dict(torch.load('./temp/best_model.pth'))
 
     # 模型评估
     model.eval()
@@ -161,29 +163,30 @@ def main():
         for X_batch, y_batch in test_loader:
             X_batch, y_batch = X_batch.to(device), y_batch.to(device)
             outputs = model(X_batch)
-            test_predictions.extend(outputs.cpu().numpy())
-            test_targets.extend(y_batch.cpu().numpy())
+            test_predictions.extend(outputs.cpu().numpy()) # Collect predictions from current batch
+            test_targets.extend(y_batch.cpu().numpy())   # Collect targets from current batch
     
-            test_predictions = np.array(test_predictions)
-            test_targets = np.array(test_targets)
+        # Convert lists to numpy arrays after collecting all batches
+        test_predictions = np.array(test_predictions)
+        test_targets = np.array(test_targets)
             
-            # 反标准化预测结果
-            test_predictions = scaler_y.inverse_transform(test_predictions)
-            test_targets = scaler_y.inverse_transform(test_targets)
+        # Inverse transform predictions and targets
+        test_predictions = scaler_y.inverse_transform(test_predictions)
+        test_targets = scaler_y.inverse_transform(test_targets)
             
-            # 计算均方根误差（RMSE）
-            rmse = np.sqrt(np.mean((test_predictions - test_targets) ** 2))
-            print(f'\nTest RMSE: {rmse:.2f}')
+        # Calculate Root Mean Squared Error (RMSE)
+        rmse = np.sqrt(np.mean((test_predictions - test_targets) ** 2))
+        print(f'\nTest RMSE: {rmse:.2f}')
             
-            # 输出前10个测试样本的预测结果
-            print('\n前10个测试样本的预测结果：')
-            print('预测值\t\t真实值\t\t误差')
-            print('-' * 40)
-            for i in range(10):
-                pred = test_predictions[i][0]
-                target = test_targets[i][0]
-                error = abs(pred - target)
-                print(f'{pred:.2f}\t\t{target:.2f}\t\t{error:.2f}')
+        # Output predictions for the first 10 test samples
+        print('\n前10个测试样本的预测结果：')
+        print('预测值\t\t真实值\t\t误差')
+        print('-' * 40)
+        for i in range(min(10, len(test_predictions))): # Ensure we don't go out of bounds
+            pred = test_predictions[i][0]
+            target = test_targets[i][0]
+            error = abs(pred - target)
+            print(f'{pred:.2f}\t\t{target:.2f}\t\t{error:.2f}')
 
 
 if __name__ == "__main__":
