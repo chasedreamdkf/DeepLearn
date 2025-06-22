@@ -46,6 +46,10 @@ class BikeSharingNN(nn.Module):
 def main():
     if not os.path.exists('./temp'):
         os.mkdir('./temp')
+    if not os.path.exists('./temp/imgs'):
+        os.mkdir('./temp/imgs')
+    if not os.path.exists('./temp/log'):
+        os.mkdir('./temp/log')
     # 设置随机种子
     torch.manual_seed(42)
     np.random.seed(42)
@@ -148,7 +152,7 @@ def main():
     plt.xlabel('Epoch')
     plt.ylabel('Loss')
     plt.legend()
-    plt.savefig('./temp/loss_plot.png')
+    plt.savefig('./temp/imgs/loss_plot.png')
     plt.show()
     plt.close()
 

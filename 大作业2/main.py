@@ -125,7 +125,7 @@ def plot_losses(items: dict):
     plt.title(f'{title} Loss Over Time')
     plt.legend()
     plt.grid(True)
-    plt.savefig('./temp/loss_plot.png')
+    plt.savefig('./temp/imgs/loss_plot.png')
     plt.show()
 
 
@@ -136,6 +136,10 @@ def main():
         os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
     if not os.path.exists('./temp'):
         os.mkdir('./temp')
+    if not os.path.exists('./temp/imgs'):
+        os.mkdir('./temp/imgs')
+    if not os.path.exists('./temp/log'):
+        os.mkdir('./temp/log')
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     dataroot = r'./CatsDogs'
     train = CatDog(dataroot, status="train")
@@ -158,10 +162,10 @@ def main():
 
     date = time.strftime("%Y-%m-%d-%H:%M:%S", time.localtime())
     if os.name == "nt":
-        f = open('./temp/train.log', 'a+')
+        f = open('./temp/log/train.log', 'a+')
         f.write(f'Training in {date}\n')
     else:
-        f = open(f'./temp/{date}.log', 'w')
+        f = open(f'./temp/log/{date}.log', 'w')
     for epoch in range(num_epochs):
         
         # 训练阶段

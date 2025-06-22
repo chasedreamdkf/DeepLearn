@@ -62,6 +62,7 @@ def test_model():
                     plt.title(f'预测: {pred_label}\n实际: {true_label}', color=title_color)
                 
                 plt.tight_layout()
+                plt.savefig(f'./temp/imgs/out{i+1}.png')
                 plt.show()
     
     accuracy = 100 * correct / total
