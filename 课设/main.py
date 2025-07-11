@@ -1,3 +1,8 @@
+"""
+数据下载地址: 链接: https://pan.baidu.com/s/1w9X_GsxFdLEH-1RHfnprZg?pwd=6mf3 提取码: 6mf3
+"""
+
+
 import os
 import torch
 import torch.nn as nn
@@ -49,8 +54,8 @@ def psnr(img1, img2):
 
 def main():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    train_dataset = DehazeDataset(root_dir='./DehazeData', mode='train', img_size=256)
-    val_dataset = DehazeDataset(root_dir='./DehazeData', mode='test', img_size=256)
+    train_dataset = DehazeDataset(root_dir='data', mode='train', img_size=256)
+    val_dataset = DehazeDataset(root_dir='data', mode='test', img_size=256)
     train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True, num_workers=4)
     val_loader = DataLoader(val_dataset, batch_size=8, shuffle=False, num_workers=2)
 

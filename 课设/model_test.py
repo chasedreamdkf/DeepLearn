@@ -21,7 +21,7 @@ def psnr(img1, img2):
 
 def main():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    test_dataset = DehazeDataset(root_dir='./DehazeData', mode='test', img_size=256)
+    test_dataset = DehazeDataset(root_dir='data', mode='test', img_size=256)
     test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False)
 
     model = DehazeNet().to(device)
